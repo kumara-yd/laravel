@@ -4,7 +4,7 @@
 
 [TOC]
 
-## Tested Laravel 10.*
+## Tested Laravel 11
 
 ## How to install
 
