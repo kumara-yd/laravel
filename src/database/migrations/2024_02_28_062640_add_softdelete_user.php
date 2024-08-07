@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->string('profileImage')->nullable();
             $table->softDeletes();
         });
     }
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('deleted_at');
+            $table->dropColumn('profileImage');
         });
     }
 };
