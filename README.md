@@ -12,7 +12,7 @@
 2. Run 
 
 ```shell
-$ sh laravel.sh
+$ sh setup.sh
 $ Masukkan nama aplikasi Laravel: <input project name>
 $ DB HOST: <input db host>
 $ DB PORT: <input db port>
