@@ -60,11 +60,6 @@ php artisan optimize:clear
 php artisan migrate
 php artisan permission:create-role admin
 
-echo "============== Migrations and Seeders =============="
-# Copy database
-cp -r ../src/database .
-php artisan migrate --seed
-
 echo "============== Additional files =============="
 # Copy additional files
 cp -r ../src/app .
@@ -184,6 +179,11 @@ sed -i '24i\Paginator::useBootstrap();' app/Providers/AppServiceProvider.php
 
 # Enable wildcard 
 sed -i "s/'enable_wildcard_permission' => false,/'enable_wildcard_permission' => true,/" config/permission.php
+
+echo "============== Migrations and Seeders =============="
+# Copy database
+cp -r ../src/database .
+php artisan migrate --seed
 
 echo "Installation completed"
 
