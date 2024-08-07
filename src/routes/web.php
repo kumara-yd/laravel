@@ -46,10 +46,12 @@ Route::get('/change-locale/{locale}', function (string $locale) {
 })->name('change-locale');
 
 use App\Http\Controllers\Operator\HomeController;
+use App\Http\Controllers\Operator\ProfileController as OperatorProfileController;
 
 Route::middleware('auth')->group(function () {
     Route::resource('home', HomeController::class);
     Route::prefix('settings')->name('settings.')->group(function () {
+        Route::resource('profile', OperatorProfileController::class);
         Route::resource('users', HomeController::class);
     });
 });

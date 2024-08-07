@@ -9,7 +9,7 @@ check_directory_not_empty() {
 }
 
 # Pastikan composer telah terpasang
-if ! command -v composer &> /dev/null; then
+if ! command -v composer > /dev/null 2>&1;  then
     echo "Composer tidak ditemukan. Silakan instal Composer terlebih dahulu."
     exit 1
 fi
