@@ -157,11 +157,6 @@ sed -i '6i\use App\\Http\\Middleware\\SuperAdminMiddleware;' bootstrap/app.php
 # Menambahkan "$middleware->append(SuperAdminMiddleware::class);" pada baris ke-17
 sed -i '17i\\t$middleware->alias(['\"locale\"'=>LocaleManager::class, '\"first.user\"'=>RegisterAsAdmin::class, '\"auth.admin\"'=>SuperAdminMiddleware::class]);' bootstrap/app.php
 
-# User.php add softdelete dan hasrole
-sed -i '9i\use Spatie\\Permission\\Traits\\HasRoles;' app/Models/User.php
-sed -i '9i\use Illuminate\\Database\\Eloquent\\SoftDeletes;' app/Models/User.php
-sed -i '16i\    use HasRoles, SoftDeletes;' app/Models/User.php
-
 # Ubah redirect sesuai role
 sed -i "s/return redirect()->intended(route('dashboard', absolute: false));/\$role = auth()->user()->roles->first(); if (\$role->name == 'admin') { return redirect()->intended(route('dashboard', absolute: false)); } else { return redirect()->intended('\/home'); }/g" app/Http/Controllers/Auth/AuthenticatedSessionController.php
 

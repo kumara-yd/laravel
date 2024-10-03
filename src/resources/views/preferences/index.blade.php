@@ -11,7 +11,7 @@
                     <div>
                         <span class="text-white">{{ session('success') }}</span>
                     </div>
-                    @can('users-create')
+                    @can('users.create')
                     <a href="{{ route('preferences.create') }}" class="btn btn-primary text-white">{{ __('app.add') }}</a>
                     @endcan
                     <table class="table-auto w-full border border-collapse shadow rounded-lg text-white"

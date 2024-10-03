@@ -18,15 +18,13 @@ trait DisplayTrait
 
     protected function getSidebar()
     {
-        return Navigation::where('display', '1')
-                        ->where('parent_id', null)
-                        ->where('active', '1')
-                        ->with(['child' => function ($query) {
-                            $query->where('active', '1');
-                            $query->where('display', '1');
-                            $query->orderBy('order', 'asc');
-                        }])
-                        ->orderBy('order', 'asc')->get();
+        return Navigation::where('display', true)
+            ->where('parent_id', null)
+            ->where('active', true)
+            ->with(['child'=>function($q){
+                $q->orderBy('order', 'asc')->get();
+            }])
+            ->orderBy('order', 'asc')->get();
     }
 
     protected function getPreference(){

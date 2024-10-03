@@ -41,4 +41,7 @@ return [
     'value' => 'Nilai',
     'group' => 'Grup',
     'check_all' => 'Pilih Semua',
+    'rolesMultiple' => 'Peran (Multiple)',
+    'selectRolesActive' => 'Pilih Peran (Aktif)',
+    'selectMultipleRoles' => 'Pilih Peran (Multiple)',
 ];

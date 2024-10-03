@@ -28,7 +28,7 @@ class UserController extends Controller
         $this->setRule('users.create');
 
         $create = true;
-        $roles = Role::all()->pluck('name');
+        $roles = Role::all()->pluck('name', 'id');
         return view('user.edit', compact('create', 'roles'));
     }
 
@@ -39,20 +39,29 @@ class UserController extends Controller
     {
         $this->setRule('users.create');
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users,email',
-            'role' => 'required',
-            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
-        ]);
-        //
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
-        $user->assignRole($request->role);
-        return redirect()->back()->with('success', __('app.notif.successSave'));
+        \DB::beginTransaction();
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email:rfc,dns|unique:users,email',
+                'role' => 'required',
+                'roleMultiple' => 'required',
+                'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+            ]);
+            //
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = bcrypt($request->password);
+            $user->save();
+            $user->assignRole($request->role);
+            $user->roleMultiple()->sync($request->roleMultiple);
+            \DB::commit();
+            return redirect()->back()->with('success', __('app.notif.successSave'));
+        }catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -62,7 +71,7 @@ class UserController extends Controller
     {
         $this->setRule('users.update');
 
-        $roles = Role::all()->pluck('name');
+        $roles = Role::all()->pluck('name', 'id');
         return view('user.edit', compact('user', 'roles'));
     }
 
@@ -73,23 +82,32 @@ class UserController extends Controller
     {
         $this->setRule('users.update');
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users,email,' . $user->id,
-            'role' => 'required',
-        ]);
-        //
-        if ($request->has('password') && $request->password != '') {
+        \DB::beginTransaction();
+        try {
             $request->validate([
-                'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+                'name' => 'required',
+                'email' => 'required|email:rfc,dns|unique:users,email,' . $user->id,
+                'role' => 'required',
+                'roleMultiple' => 'required',
             ]);
-            $user->password = bcrypt($request->password);
+            //
+            if ($request->has('password') && $request->password != '') {
+                $request->validate([
+                    'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+                ]);
+                $user->password = bcrypt($request->password);
+            }
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->update();
+            $user->syncRoles($request->role);
+            $user->roleMultiple()->sync($request->roleMultiple);
+            \DB::commit();
+            return redirect()->back()->with('success', __('app.notif.successUpdate'));
+        }catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
         }
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->update();
-        $user->syncRoles($request->role);
-        return redirect()->back()->with('success', __('app.notif.successUpdate'));
     }
 
     /**

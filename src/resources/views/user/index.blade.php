@@ -20,6 +20,7 @@
                                 <th class="px-4 py-2">{{ __('app.name') }}</th>
                                 <th class="px-4 py-2">{{ __('app.email') }}</th>
                                 <th class="px-4 py-2">{{ __('app.roles') }}</th>
+                                <th class="px-4 py-2">{{ __('app.rolesMultiple') }}</th>
                                 <th class="px-4 py-2">{{ __('app.action') }}</th>
                             </tr>
                         </thead>
@@ -30,6 +31,7 @@
                                     <td class="px-4 py-2 text-center">{{ $user->name }}</td>
                                     <td class="px-4 py-2 text-center">{{ $user->email }}</td>
                                     <td class="px-4 py-2 text-center">{{ $user->roles->pluck('name') }}</td>
+                                    <td class="px-4 py-2 text-center">{{ $user->roleMultiple->pluck('name') }}</td>
                                     <td class="px-4 py-2 text-center">
                                         @can('users.update')
                                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary">{{ __('app.edit') }}</a>

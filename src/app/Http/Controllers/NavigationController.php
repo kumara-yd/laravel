@@ -53,8 +53,8 @@ class NavigationController extends Controller
         $navigation->icon = $request->icon;
         $navigation->parent_id = $request->parent_id;
         $navigation->order = $request->order;
-        $navigation->active = $request->active == 'on' ? 1 : 0;
-        $navigation->display = $request->display == 'on' ? 1 : 0;
+        $navigation->active = $request->has('active') ? 1 : 0;
+        $navigation->display = $request->has('display') ? 1 : 0;
         $navigation->save();
         return redirect()->back()->with('success', __('app.notif.successSave'));
     }
@@ -94,8 +94,8 @@ class NavigationController extends Controller
         $navigation->icon = $request->icon;
         $navigation->parent_id = $request->parent_id;
         $navigation->order = $request->order;
-        $navigation->active = $request->active;
-        $navigation->display = $request->display;
+        $navigation->active = $request->has('active') ? 1 : 0;
+        $navigation->display = $request->has('display') ? 1 : 0;
         if(!$request->has('active')){
             $navigation->active = 0;
         }

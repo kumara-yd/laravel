@@ -21,7 +21,9 @@ class Navigation extends Model
 
     public function child()
     {
-        return $this->hasMany(Navigation::class, 'parent_id', 'id');
+        return $this->hasMany(Navigation::class, 'parent_id', 'id')
+                ->where('active', true)
+                ->where('display', true);
     }
 
     public function parent()

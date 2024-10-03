@@ -151,6 +151,19 @@
                                         </div>
                                     </div>
 
+                                    <div class="row mb-3">
+                                        <label for="role" class="col-md-4 col-lg-3 col-form-label">{{ __('Role') }}
+                                        </label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <select name="role" class="form-select" id="role">
+                                                <option value=""></option>
+                                                @foreach ($user->roleMultiple as $item)
+                                                    <option value="{{ $item->id }}" @selected($item->id == $user->roles->first()->id)>{{ $item->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="text-center">
                                         <button type="submit" class="btn btn-primary">Save Changes</button>
                                     </div>

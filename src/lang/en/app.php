@@ -40,4 +40,7 @@ return [
     'value' => 'Value',
     'group' => 'Group',
     'check_all' => 'Check All',
+    'rolesMultiple' => 'Roles Multiple',
+    'selectRolesActive' => 'Select Roles Active',
+    'selectMultipleRoles' => 'Select Multiple Roles',
 ];

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 class ProfileController extends Controller
 {
@@ -16,8 +17,8 @@ class ProfileController extends Controller
     public function index()
     {
         $this->setRule('home.read');
-
-        return $this->display('operator.profile.edit');
+        $user = auth()->user();
+        return $this->display('operator.profile.edit', compact('user'));
     }
 
     /**
@@ -26,15 +27,14 @@ class ProfileController extends Controller
     public function store(Request $request)
     {
         $this->setRule('home.create');
-
-        // validation
-        $request->validate([
-            'oldpassword' => ['required', 'string', 'min:8'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
-            'password_confirmation' => ['required', 'string'],
-        ]);
-
+        \DB::beginTransaction();
         try {
+            // validation
+            $request->validate([
+                'oldpassword' => ['required', 'string', 'min:8'],
+                'password' => ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+                'password_confirmation' => ['required', 'string'],
+            ]);
             $user = auth()->user();
             // cek old password
             if (!\Hash::check($request->oldpassword, $user->password)) {
@@ -42,11 +42,15 @@ class ProfileController extends Controller
             }
             $user->password = bcrypt($request->newpassword);
             $user->save();
+            \DB::commit();
         } catch (\Exception $th) {
+            \DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());
         }
 
-        return redirect()->route('settings.profile.index', ['tab'=>'password'])->with('success', __('Password updated successfully'));
+        return redirect()
+            ->route('settings.profile.index', ['tab' => 'password'])
+            ->with('success', __('Password updated successfully'));
     }
 
     /**
@@ -56,14 +60,15 @@ class ProfileController extends Controller
     {
         $this->setRule('home.update');
         $user = $profile;
-        // validation
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'profileImage' => ['nullable', 'image', 'mimes:jpeg,jpg,png'],
-        ]);
-
+        \DB::beginTransaction();
         try {
+            // validation
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'role' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email:rfc,dns', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'profileImage' => ['nullable', 'image', 'mimes:jpeg,jpg,png'],
+            ]);
             $user->name = $request->name;
             $user->email = $request->email;
 
@@ -74,10 +79,16 @@ class ProfileController extends Controller
             }
 
             $user->save();
+            $role = Role::find($request->role);
+            $user->syncRoles($role->name);
+            \DB::commit();
         } catch (\Exception $th) {
+            \DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());
         }
 
-        return redirect()->route('settings.profile.index', ['tab'=>'editProfile'])->with('success', __('Profile updated successfully'));
+        return redirect()
+            ->route('settings.profile.index', ['tab' => 'editProfile'])
+            ->with('success', __('Profile updated successfully'));
     }
 }
